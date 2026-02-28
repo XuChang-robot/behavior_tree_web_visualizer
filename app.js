@@ -207,8 +207,17 @@ function parseDotFile(content) {
         const links = [];
         const nodeMap = new Map();
 
+        // 处理跨行的属性值（将断开的行合并）
+        let processedContent = content;
+        let prevLength = 0;
+        while (processedContent.length !== prevLength) {
+            prevLength = processedContent.length;
+            // 匹配以 [ 开头但没有以 ] 结尾的行，与下一行合并
+            processedContent = processedContent.replace(/(\[[^\]]*)\n([^\[]*\])/g, '$1$2');
+        }
+
         // 提取节点和连接
-        const lines = content.split('\n');
+        const lines = processedContent.split('\n');
         let nodeId = 0;
 
         for (const line of lines) {
@@ -242,11 +251,14 @@ function parseDotFile(content) {
                 }
 
                 if (nodeName && rest) {
-                    // 提取标签
-                    const labelMatch = rest.match(/label=([^,\]]+)/);
+                    // 提取标签（处理带引号的值，可能包含转义字符）
+                    const labelMatch = rest.match(/label="([^"]*)"/);
+                    const labelMatch2 = rest.match(/label=([^,\]]+)/);
                     let label = nodeName;
                     if (labelMatch) {
-                        label = labelMatch[1].replace(/"/g, '');
+                        label = labelMatch[1].replace(/\\n/g, '\n'); // 处理换行符转义
+                    } else if (labelMatch2) {
+                        label = labelMatch2[1].replace(/"/g, '');
                     }
                     
                     // 提取其他属性
@@ -441,7 +453,12 @@ function visualizeTree() {
                 }
             }
             // 加上左右边距（增加外扩距离）
-            node.width = Math.max(100, textWidth + 60); // 增加更多余度
+            let extraWidth = 60; // 基础边距
+            // 平行四边形需要额外的宽度，因为倾斜会占用空间
+            if (node.shape === 'parallelogram') {
+                extraWidth += 60; // 额外增加60px用于倾斜部分
+            }
+            node.width = Math.max(100, textWidth + extraWidth);
             node.height = 50;
         });
         
