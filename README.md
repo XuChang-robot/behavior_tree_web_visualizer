@@ -1,6 +1,6 @@
 # 行为树可视化系统
 
-一个基于Web的行为树可视化工具，能够解析py_trees库生成的.dot文件，并提供美观的交互式可视化界面。
+一个基于Web的纯前端行为树可视化工具，能够解析py_trees库生成的.dot文件，并提供美观的交互式可视化界面。
 
 ## 功能特性
 
@@ -17,7 +17,7 @@
 
 ### 1. 打开应用
 
-直接在浏览器中打开`index.html`文件即可使用。
+直接在浏览器中打开`index.html`文件即可使用，无需任何服务器环境。
 
 ### 2. 加载行为树文件
 
@@ -40,7 +40,7 @@
 
 ## 技术栈
 
-- **前端框架**：纯HTML/CSS/JavaScript
+- **前端框架**：纯HTML/CSS/JavaScript（无后端）
 - **可视化库**：D3.js v7
 - **文件解析**：自定义.dot文件解析器
 
@@ -50,7 +50,6 @@
 bt_visualizer/
 ├── index.html                      # 主页面文件
 ├── app.js                         # 核心逻辑和可视化代码
-├── start.bat                       # Windows启动脚本
 ├── behavior_tree_visualization.dot  # 示例行为树文件
 └── README.md                       # 项目说明文档
 ```
@@ -62,12 +61,14 @@ bt_visualizer/
 - 解析节点定义（名称、形状、颜色等属性）
 - 解析连接关系（父子节点关系）
 - 支持多种节点形状（矩形、椭圆、菱形、平行四边形等）
+- 处理跨行属性值（如包含`\n`的标签）
 
 ### 2. 树布局算法
 
 - 使用自底向上的方式计算节点位置
 - 确保子节点围绕父节点中心对称分布
 - 自动调整节点间距，避免重叠
+- 平行四边形节点自动增加额外宽度
 
 ### 3. 交互功能
 
@@ -83,6 +84,15 @@ bt_visualizer/
 - 箭头自动对齐到锚点方向
 - 实现连接线碰撞检测
 
+## 支持的节点类型
+
+| 形状 | 说明 | 典型用途 |
+|------|------|---------|
+| `box` / `rectangle` | 矩形（圆角） | Selector、Sequence等复合节点 |
+| `ellipse` / `circle` | 椭圆 | 动作节点（Action） |
+| `diamond` | 菱形 | 条件节点（Condition） |
+| `parallelogram` | 平行四边形 | 并行节点（Parallel） |
+
 ## 浏览器兼容性
 
 - Chrome/Edge（推荐）
@@ -90,14 +100,17 @@ bt_visualizer/
 - Safari
 - 其他现代浏览器
 
-## 开发说明
+## 本地运行
 
-### 本地运行
-
-1. 克隆项目：`git clone https://github.com/XuChang-robot/behavior_tree_web_visualizer.git`
+1. 克隆项目：
+   ```bash
+   git clone https://github.com/XuChang-robot/behavior_tree_web_visualizer.git
+   ```
 2. 打开`index.html`文件即可使用
 
-### 贡献指南
+无需安装任何依赖，无需启动服务器，纯前端应用！
+
+## 贡献指南
 
 欢迎提交Issue和Pull Request来改进项目！
 
