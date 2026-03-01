@@ -1,52 +1,70 @@
 @echo off
+chcp 65001 >nul
+echo ==========================================
+echo   Behavior Tree Visualizer - Start Script
+echo ==========================================
+echo.
 
-REM 启用命令扩展
-setlocal enabledelayedexpansion
+REM Check if port 8000 is in use
+netstat -an | findstr ":8000" | findstr "LISTENING" >nul
+if %errorlevel% equ 0 (
+    echo Port 8000 is already in use, trying to stop existing process...
+    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8000" ^| findstr "LISTENING"') do (
+        taskkill /F /PID %%a >nul 2>&1
+        echo Stopped process %%a
+    )
+    timeout /t 1 /nobreak >nul
+)
 
-REM 检查Python是否可用
+echo Starting server...
+echo.
+
+REM Check if Python is available
 python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo 错误: 未找到Python
-    echo 请确保Python已安装并添加到系统环境变量
-    pause
-    exit /b 1
+if %errorlevel% equ 0 (
+    echo [OK] Python detected
+    echo Starting server with Python...
+    python -m http.server 8000
+    exit /b
 )
 
-echo 正在启动本地服务器...
-
-REM 启动本地服务器
-start "Python HTTP Server" /B python -m http.server 8000
-
-REM 等待服务器启动
-echo 等待服务器启动...
-timeout /t 3 /nobreak >nul
-
-REM 检查服务器是否启动成功
-tasklist | findstr "python" >nul
-if %errorlevel% neq 0 (
-    echo 错误: 服务器启动失败
-    pause
-    exit /b 1
+REM Check if Python3 is available
+python3 --version >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [OK] Python3 detected
+    echo Starting server with Python3...
+    python3 -m http.server 8000
+    exit /b
 )
 
-echo 服务器启动成功！
-
-REM 打开浏览器访问应用
-echo 正在打开浏览器...
-start http://localhost:8000/
-
-echo 应用已在浏览器中打开
- echo 按任意键关闭服务器...
- pause >nul
-
-REM 关闭服务器
-echo 正在关闭服务器...
-taskkill /FI "WINDOWTITLE eq Python HTTP Server" /F >nul 2>&1
-
-REM 如果上面的命令失败，尝试使用进程名关闭
-if %errorlevel% neq 0 (
-    taskkill /IM python.exe /F >nul 2>&1
+REM Check if py is available
+py --version >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [OK] py detected
+    echo Starting server with py...
+    py -m http.server 8000
+    exit /b
 )
 
-echo 服务器已关闭
+REM Check if Node.js is available
+node --version >nul 2>&1
+if %errorlevel% equ 0 (
+    echo Detected Node.js, using npx serve...
+    npx serve -l 8000
+    exit /b
+)
+
+echo.
+echo ==========================================
+echo Error: Cannot start server
+echo ==========================================
+echo.
+echo Please ensure one of the following environments is installed:
+echo   1. Python (python, python3, or py)
+echo   2. Node.js (will use npx serve)
+echo.
+echo Install Python: https://www.python.org/downloads/
+echo Install Node.js: https://nodejs.org/
+echo.
 pause
+exit /b 1

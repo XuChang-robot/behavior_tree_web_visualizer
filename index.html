@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>行为树可视化工具</title>
+    <title data-i18n="title">行为树可视化工具</title>
     <style>
         body {
             font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
@@ -27,6 +27,8 @@
             color: #2c3e50;
             margin-bottom: 20px;
             font-size: 24px;
+            user-select: none;
+            cursor: default;
         }
         .layout {
             display: flex;
@@ -49,18 +51,22 @@
         }
         .upload-area p,
         .save-controls p,
-        .instructions p {
+        .instructions p,
+        .settings p,
+        .language-selector p {
             font-weight: bold;
             margin-bottom: 12px;
             color: #555;
             font-size: 14px;
+            user-select: none;
+            cursor: default;
         }
         .control-btn {
             display: block;
             width: 100%;
             padding: 8px 12px;
             margin: 5px 0;
-            background-color: #4CAF50;
+            background-color: #2196F3;
             color: white;
             border: none;
             border-radius: 4px;
@@ -69,14 +75,16 @@
             transition: all 0.3s ease;
         }
         .control-btn:hover {
-            background-color: #45a049;
+            background-color: #0b7dda;
             transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
         }
+        #reset-view,
         #save-svg,
         #save-png {
             background-color: #2196F3;
         }
+        #reset-view:hover,
         #save-svg:hover,
         #save-png:hover {
             background-color: #0b7dda;
@@ -89,12 +97,16 @@
         }
         .instructions li {
             margin: 4px 0;
+            user-select: none;
+            cursor: default;
         }
         .settings p {
             font-weight: bold;
             margin-bottom: 12px;
             color: #555;
             font-size: 14px;
+            user-select: none;
+            cursor: default;
         }
         .checkbox-label {
             display: flex;
@@ -103,15 +115,13 @@
             font-size: 12px;
             color: #666;
             margin: 5px 0;
+            user-select: none;
         }
         .checkbox-label input[type="checkbox"] {
             margin-right: 8px;
             cursor: pointer;
             width: 16px;
             height: 16px;
-        }
-        .checkbox-label span {
-            user-select: none;
         }
         #tree-container {
             flex: 1;
@@ -124,8 +134,9 @@
         }
         
         #tree-container svg {
-            min-width: 1000px;
-            min-height: 800px;
+            width: 100%;
+            height: 100%;
+            display: block;
         }
         .node {
             cursor: grab;
@@ -192,43 +203,56 @@
 </head>
 <body>
     <div class="container">
-        <h1>行为树可视化系统</h1>
+        <h1 data-i18n="title">行为树可视化系统</h1>
         <div class="layout">
             <div class="controls-sidebar">
                 <div class="upload-area" id="upload-area">
-                    <p>文件操作</p>
+                    <p data-i18n="fileOperation">文件操作</p>
                     <input type="file" id="file-input" accept=".dot" style="display: none;">
-                    <button class="control-btn" onclick="document.getElementById('file-input').click()">选择文件</button>
-                    <button class="control-btn" onclick="loadSampleFile()">加载示例</button>
+                    <button class="control-btn" onclick="document.getElementById('file-input').click()" data-i18n="selectDotFile">选择 .dot 文件</button>
                     <p class="error-message" id="error-message"></p>
                     <div class="loading" id="loading"></div>
                 </div>
                 <div class="save-controls">
-                    <p>保存选项</p>
-                    <button class="control-btn" id="save-svg">保存 SVG</button>
-                    <button class="control-btn" id="save-png">保存 PNG</button>
+                    <p data-i18n="viewControl">视图控制</p>
+                    <button class="control-btn" id="reset-view" data-i18n="resetViewShortcut">视角重置 (R)</button>
+                    <p data-i18n="saveOptions">保存选项</p>
+                    <button class="control-btn" id="save-svg" data-i18n="saveSVG">保存 SVG</button>
+                    <button class="control-btn" id="save-png" data-i18n="savePNG">保存 PNG</button>
                 </div>
                 <div class="instructions">
-                    <p>操作说明</p>
+                    <p data-i18n="instructions">操作说明</p>
                     <ul>
-                        <li>节点支持拖拽移动</li>
-                        <li>鼠标左键平移视场</li>
-                        <li>鼠标滚轮、Ctrl+鼠标滚轮</li>
+                        <li data-i18n="dragNodes">节点支持拖拽移动</li>
+                        <li data-i18n="panView">鼠标左键平移视场</li>
+                        <li data-i18n="zoomWheel">鼠标滚轮缩放（细）</li>
+                        <li data-i18n="zoomCtrlWheel">Ctrl+鼠标滚轮缩放（粗）</li>
                     </ul>
                 </div>
                 <div class="settings">
-                    <p>显示设置</p>
+                    <p data-i18n="displaySettings">显示设置</p>
                     <label class="checkbox-label">
                         <input type="checkbox" id="move-children-with-parent" checked>
-                        <span>子节点随父节点一起移动</span>
+                        <span data-i18n="moveChildrenWithParent">子节点随父节点一起移动</span>
                     </label>
+                </div>
+                <div class="language-selector">
+                    <p data-i18n="language">语言</p>
+                    <select id="language-select" class="control-btn" style="background-color: #f0f0f0; color: #333;">
+                        <option value="zh" data-i18n="zh">中文</option>
+                        <option value="en" data-i18n="en">English</option>
+                    </select>
                 </div>
             </div>
             <div id="tree-container"></div>
         </div>
     </div>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="src/main.js"></script>
+    <script type="module">
+        import { initLanguage, setupLanguageSelector } from './src/core/i18n.js';
+        initLanguage();
+        setupLanguageSelector();
+    </script>
 </body>
 </html>
