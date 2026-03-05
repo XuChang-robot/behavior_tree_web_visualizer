@@ -1,51 +1,40 @@
 @echo off
 chcp 65001 >nul
-echo ==========================================
-echo   Behavior Tree Visualizer - Smart Launcher
-echo ==========================================
+echo ========================================
+echo   Behavior Tree Visualizer Launcher
+echo ========================================
 echo.
 
-REM Check Node.js
-node --version >nul 2>&1
+REM Check if Node.js is available
+where node >nul 2>&1
 if %errorlevel% equ 0 (
-    echo [OK] Node.js detected
-    echo Starting with Node.js...
+    echo [INFO] Node.js detected, starting with Node.js...
+    echo.
     node start.js
-    exit /b
+    goto :end
 )
 
-REM Check Python
-python --version >nul 2>&1
+REM Check if Python is available
+where python >nul 2>&1
 if %errorlevel% equ 0 (
-    echo [OK] Python detected
-    echo Starting with Python...
-    start start.bat
-    exit /b
+    echo [INFO] Python detected, starting with Python...
+    echo.
+    python -m http.server 8000
+    goto :end
 )
 
-REM Check Python3
-python3 --version >nul 2>&1
+REM Check if Python3 is available
+where python3 >nul 2>&1
 if %errorlevel% equ 0 (
-    echo [OK] Python3 detected
-    echo Starting with Python3...
+    echo [INFO] Python3 detected, starting with Python3...
+    echo.
     python3 -m http.server 8000
-    exit /b
+    goto :end
 )
 
-echo.
-echo ==========================================
-echo Error: No runtime environment detected
-echo ==========================================
-echo.
-echo Please install one of the following:
-echo.
-echo [Recommended] Node.js (faster, more features)
-echo   Download: https://nodejs.org/
-echo   Double-click this file after installation
-echo.
-echo [Alternative] Python 3
-echo   Download: https://www.python.org/downloads/
-echo   Double-click this file after installation
-echo.
+echo [ERROR] Neither Node.js nor Python found!
+echo Please install Node.js or Python to run this application.
 echo.
 pause
+
+:end

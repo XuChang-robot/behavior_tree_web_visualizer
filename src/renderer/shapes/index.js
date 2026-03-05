@@ -7,6 +7,7 @@ import * as Rectangle from './rectangle.js';
 import * as Ellipse from './ellipse.js';
 import * as Diamond from './diamond.js';
 import * as Parallelogram from './parallelogram.js';
+import * as Octagon from './octagon.js';
 
 /**
  * 形状映射表
@@ -35,6 +36,10 @@ const shapeMap = {
     parallelogram: {
         create: Parallelogram.createParallelogram,
         is: Parallelogram.isParallelogram
+    },
+    octagon: {
+        create: Octagon.createOctagon,
+        is: Octagon.isOctagon
     }
 };
 

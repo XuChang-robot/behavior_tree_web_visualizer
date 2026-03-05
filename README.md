@@ -106,10 +106,13 @@ bt_visualizer/
 
 | 形状 | 说明 | 典型用途 |
 |------|------|---------|
-| `box` / `rectangle` | 矩形（圆角） | Selector、Sequence等复合节点 |
+| `box` / `rectangle` | 矩形（圆角） | Sequence复合节点 |
+| `octagon` | 八边形 | Selector复合节点 |
+| `parallelogram` | 平行四边形 | 并行节点（Parallel） |
 | `ellipse` / `circle` | 椭圆 | 动作节点（Action） |
 | `diamond` | 菱形 | 条件节点（Condition） |
-| `parallelogram` | 平行四边形 | 并行节点（Parallel） |
+
+
 
 ## 浏览器兼容性
 
